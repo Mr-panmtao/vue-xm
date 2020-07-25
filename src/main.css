@@ -1,0 +1,62 @@
+body,
+html,
+#app {
+  -webkit-overflow-scrolling: touch;
+  height: 100%;
+  background-color: #F7F8FA !important;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/*清除浮动*/
+.clearfix:before,
+.clearfix:after {
+  content: '';
+  display: table;
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+/*单行溢出*/
+.one-txt-cut {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/*多行溢出*/
+.txt-cut {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.van-tabs__line {
+  background-color: #4fc08d !important;
+}
+
+.van-address-edit {
+  padding: 12px 0 !important;
+}
+
+.van-address-list__bottom {
+  display: none;
+}
+.van-action-sheet__item {
+  border-bottom: 1px solid #ddd !important;
+}
+.van-action-sheet__item:last-child {
+  border-bottom: none !important;
+}
+
+.van-cell__title {
+  width: 1.5rem !important;
+}
