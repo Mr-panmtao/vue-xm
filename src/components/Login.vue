@@ -91,6 +91,15 @@
               label="手机号："
               placeholder="手机号"
             />
+             <van-field
+              v-model="userCode"
+              label="验证码："
+              placeholder="请输入验证码"
+            >
+               <template #button>
+                <van-button size="small" :disabled="isDisabled" @click="getCode" type="primary">发送验证码</van-button>
+              </template>
+            </van-field>
             <van-field
               v-model="addInfo.email"
               type="email"
@@ -123,8 +132,8 @@ export default {
       active: 0,
       // 登录表单数据对象
       login: {
-        username: '',
-        password: ''
+        username: 'test',
+        password: 'test'
       },
       // 注册表单数据对象
       addInfo: {
@@ -132,7 +141,13 @@ export default {
         password: '',
         phone: '',
         email: ''
-      }
+      },
+      // 用户输入的验证码
+      userCode: '',
+      // 后端返回的验证码
+      resCode: '',
+      // 是否禁用按钮
+      isDisabled: false
     }
   },
   created () {},
@@ -156,26 +171,44 @@ export default {
       this.$router.go(-1)
     },
 
+    // 获取手机验证码
+    async getCode () {
+      if (this.addInfo.phone.trim().length <= 0) return this.$msg('请输入手机号')
+      this.isDisabled = true
+      const { data: res } = await this.$http.get('phone?phoneNum=' + this.addInfo.phone)
+      if (res.msg === 'fail') return this.$msg('请勿频繁发送验证码')
+      this.resCode = res.code
+      setTimeout(() => {
+        this.resCode = ''
+      }, 300000)
+      setTimeout(() => {
+        this.isDisabled = false
+      }, 30000)
+    },
+
     // 注册
     async onSubmit (values) {
       if (this.addInfo.username.trim().length <= 0) return this.$msg('请输入账号')
       if (this.addInfo.password.trim().length <= 0) return this.$msg('请输入密码')
       if (this.addInfo.phone.trim().length <= 0) return this.$msg('请输入手机号')
+      if (this.userCode.trim().length <= 0) return this.$msg('请输入验证码')
       if (this.addInfo.email.trim().length <= 0) return this.$msg('请输入邮箱')
+      if (this.userCode !== this.resCode) return this.$msg('验证码不正确')
 
       // 查询用户名是否已经存在
       const { data: result } = await this.$http.get('getusername?username=' + values.username)
       if (result.data.length >= 1) return this.$msg('用户名已经存在')
 
       // 用户默认头像
-      values.userimgs = 'http://49.232.193.192:3007/images/user-default.jpg'
-      const { data: res } = await this.$http.post('adduserinfo', values)
+      this.addInfo.userimgs = 'https://oscar-start.oss-cn-beijing.aliyuncs.com/rty_blog-1596891246108.jpg'
+      const { data: res } = await this.$http.post('adduserinfo', this.addInfo)
       if (res.status !== 201) {
         return this.$Notify({ type: 'danger', message: '注册失败！' })
       }
       this.$Notify({ type: 'success', message: '注册成功！' })
       this.addInfo = {}
       this.active = 0
+      this.resCode = ''
     },
 
     // 其他方式登录

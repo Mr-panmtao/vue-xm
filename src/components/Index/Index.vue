@@ -43,17 +43,17 @@
     />
 
     <!-- 宫格快捷导航区 -->
-         <div class="crids">
-        <van-grid :column-num="5" :border="false">
-          <van-grid-item
-            @click="goodsClick(item.classId)"
-            v-for="(item, index) in cridData"
-            :key="index"
-            :icon="item.imgurl"
-            :text="item.title"
-          >
-          </van-grid-item>
-        </van-grid>
+    <div class="crids">
+      <van-grid :column-num="5" :border="false">
+        <van-grid-item
+          @click.stop="goodsClick(item.classId)"
+          v-for="(item, index) in cridData"
+          :key="index"
+          :icon="item.imgurl"
+          :text="item.title"
+        >
+        </van-grid-item>
+      </van-grid>
     </div>
 
     <!-- 加入会员 -->
@@ -68,6 +68,8 @@
       <div class="purchase-header">
         <div class="header-left">
           <h4>限时抢购</h4>
+
+          <!-- 定时器 -->
           <van-count-down :time="time">
             <template v-slot="timeData">
               <span class="block">{{ timeData.hours }}</span>
@@ -80,16 +82,16 @@
         </div>
         <a href="javascript:;" style="font-size:18px">更多 </a>
       </div>
-      <!-- 商品列表 -->
+      <!-- 商品列表 :style="ulHeight"-->
       <div id="goods">
-        <ul id="goodsList" :style="ulHeight">
+        <ul id="goodsList" class="clearfix">
           <li
             v-for="(item, index) in goodsList.slice(0, 15)"
             :key="index"
             @click="gofuqian(item.id)"
           >
             <img style="width: 110px" :src="item.goods_Img" alt="" />
-            <h5>{{ item.goods_Name }}</h5>
+            <h5 class="one-txt-cut">{{ item.goods_Name }}</h5>
             <div class="til">
               <div>
                 <p>￥{{ item.goods_start_price }}</p>
@@ -134,6 +136,7 @@
 </template>
 
 <script>
+import Iscroll from 'iscroll'
 // 信息相关数据
 const info = [
   {
@@ -174,6 +177,23 @@ export default {
       const { data: res } = await this.$http.get('getGoodsAll')
       this.goodsList = res.data
 
+      // 给限时抢购商品的ul设置宽度
+      var uls = document.querySelector('#goodsList')
+      uls.style.width = this.goodsList.slice(0, 15).length * 3.5 + 'rem'
+      // 阻止浏览器的默认行为
+      uls.addEventListener(
+        'touchmove',
+        function (ev) {
+          ev.preventDefault()
+        },
+        { passive: false }
+      )
+
+      this.iscroll = new Iscroll('#goods', {
+        scrollX: true
+      })
+
+      // 测试添加
       this.goodsList.forEach(i => {
         const goodsInfo = {}
 
@@ -205,7 +225,13 @@ export default {
 
     // 获取特色专区商品数据
     async goodsClassList () {
-      const { data: res } = await this.$http.get('getgoodslist')
+      const { data: res } = await this.$http.get('getgoodslist?id=6')
+      for (let i = 0, len = res.data.length; i < len; i++) {
+        const currentRandom = parseInt(Math.random() * (len - 1))
+        const current = res.data[i]
+        res.data[i] = res.data[currentRandom]
+        res.data[currentRandom] = current
+      }
       this.goodsClass = res.data
     },
 
@@ -244,16 +270,12 @@ export default {
     ulHeight () {
       return 'width:' + this.goodsList.slice(0, 15).length * 3.5 + 'rem'
     }
-
   },
-  mounted () {
-    // this.loading = false
-  }
+  mounted () {}
 }
 </script>
 
 <style lang="less" scoped>
-
 #nidaye {
   background: url("../../assets/tabBarImg/backImage.png");
 }
@@ -354,18 +376,24 @@ export default {
   justify-content: space-around;
 }
 #goods {
-  overflow: auto;
+  // overflow: auto;
+  overflow: hidden;
   // margin-bottom: 15px;
 }
 #goods h5 {
   height: 32px;
+  text-align: center;
   font-weight: 400;
+}
+#goods ul {
+  display: flex;
+  height: 189px;
 }
 /* 限时抢购-商品列表 */
 #goodsList li {
-  float: left;
-  width: 120px;
-  margin: 0 5px;
+  text-align: center;
+  width: 111px;
+  margin: 0 10px;
   font-size: 12px;
 }
 

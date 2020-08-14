@@ -56,7 +56,7 @@
                     </div>
                     <div class="prices">
                       <p>￥{{ item.goods_start_price }}</p>
-                      <div>x1</div>
+                      <div>x{{item.goods_num}}</div>
                     </div>
                   </div>
                   <div class="title1">
@@ -159,7 +159,7 @@
     <van-action-sheet id="wuliu" :round="false" v-model="show" title="物流信息">
       <div class="content">
         <van-steps direction="vertical" :active="0">
-          <van-step>
+          <!-- <van-step>
             <h3>【贵阳市】快件已到达贵阳市</h3>
             <p>{{times}}</p>
           </van-step>
@@ -174,7 +174,7 @@
           <van-step>
             <h3>快件离开店家已发往贵阳</h3>
             <p>{{times}}</p>
-          </van-step>
+          </van-step> -->
           <van-step>
             <h3>已揽件</h3>
             <p>{{times}}</p>
@@ -258,8 +258,8 @@ export default {
       this.times = times
     },
     time (time) {
-      var date = new Date(time + 8 * 3600 * 1000) // 增加8小时
-      return date.toJSON().substr(0, 19).replace('T', ' ')
+      // var date = new Date() // 增加8小时
+      return time.toJSON().substr(0, 19).replace('T', ' ')
     },
 
     // 删除订单信息
@@ -406,12 +406,18 @@ export default {
         margin-top: 15px;
         p {
           font-size: 16px;
+          color: #e75450;
         }
         div {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 3px;
           margin-top: 10px;
-          text-align: right;
-          font-size: 12px;
-          color: #cacaca;
+          font-size: 14px;
+          color: #999;
+          border: 1px solid #ccc;
+          border-radius: 50%;
         }
       }
     }

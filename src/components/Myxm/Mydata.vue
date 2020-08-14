@@ -254,7 +254,7 @@ export default {
       formData.append('password', this.userinfo.password)
       formData.append('email', this.userinfo.email)
 
-      const { data: res } = await this.$http.post('addUserImg', formData)
+      const { data: res } = await this.$http.post('upload', formData)
       if (res.status !== 201) return this.$msg('上传头像失败！')
       this.$Notify({ type: 'success', message: '上传头像成功！' })
       this.getUserList()

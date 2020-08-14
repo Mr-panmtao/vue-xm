@@ -8,7 +8,7 @@
       @click-left="onClickLeft"
     />
 
-    <div id="goodsDesc" v-for="item in goodsClass" :key="item.id">
+    <div id="goodsDesc" v-for="item in goods_info" :key="item.id">
       <img :src="item.goods_Img" alt="" @click="yulan(item.goods_Img)"/>
       <div>
         <!-- 商品具体参数 -->
@@ -30,7 +30,7 @@
           </div>
           <div class="goods-center">
             <van-icon name="clock-o" />
-            最快29分钟内送达
+            最快一天内送达
           </div>
         </div>
         <!-- 商品规格 -->
@@ -55,7 +55,7 @@
           <van-goods-action-icon
             icon="cart-o"
             text="购物车"
-            @click="onClickIcon"
+            @click="onClickShoop"
           />
           <van-goods-action-icon
             icon="shop-o"
@@ -78,12 +78,15 @@ export default {
   data () {
     return {
       // 商品信息
-      goodsClass: [],
+      goods_info: [],
       // 加入购物车数据对象
       cart: {},
       // 用户id
       uid: 0,
-      imgUrl: []
+      // 预览图片地址
+      imgUrl: [],
+      // 当前商品id
+      goods_id: 0
     }
   },
   created () {
@@ -117,15 +120,19 @@ export default {
       }
 
       const { data: res } = await this.$http.get('getgoodsById?id=' + id)
-      this.goodsClass = res.data
+      this.goods_info = res.data
       // 配置加入购物车数据
       res.data.forEach(item => {
+        this.goods_id = item.id
         this.cart.goods_Name = item.goods_Name
         this.cart.goods_Img = item.goods_Img
         this.cart.goods_desc = item.goods_desc
         this.cart.goods_start_price = item.goods_start_price
         this.cart.goods_end_price = item.goods_end_price
         this.cart.userId = this.uid
+        this.cart.is_Checked = false
+        this.cart.num = 1
+        this.cart.goods_id = item.id
       })
     },
     // 返回上一级
@@ -134,7 +141,11 @@ export default {
     },
     // 点击小图标
     onClickIcon () {
-      return this.$Dialog({ title: '温馨提示', message: '该功能暂未开通！' })
+      return this.$msg('暂未实现！')
+    },
+    // 点击小图标
+    onClickShoop () {
+      this.$router.push('/shoop')
     },
     // 点击加入购物车
     onClickButton () {
@@ -142,8 +153,18 @@ export default {
         title: '提示',
         message: '你确认要将该商品加入购物车吗？'
       })
-        .then(() => {
-          this.$http.post('addCart', this.cart)
+        .then(async () => {
+          const { data: res } = await this.$http.get('getusercart?id=' + this.uid)
+          const isYes = res.data.filter(item => item.goods_id === this.goods_id)
+
+          // 如果购物车已经存在则将数量加 1
+          if (isYes.length >= 1) {
+            const num = isYes[0].num
+            const id = isYes[0].id
+            this.$http.post('updateCart', { num: num + 1, id: id })
+          } else {
+            this.$http.post('addCart', this.cart)
+          }
           this.$Notify({ type: 'success', message: '加入购物车成功！' })
           this.$router.push('/shoop')
           window.sessionStorage.setItem('active', 2)

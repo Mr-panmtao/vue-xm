@@ -41,7 +41,9 @@ import {
   SubmitBar,
   PasswordInput, NumberKeyboard,
   Step, Steps,
-  Skeleton
+  Skeleton,
+  Loading,
+  Checkbox, CheckboxGroup
 } from 'vant'
 
 // 注册时可以配置额外的选项
@@ -50,6 +52,9 @@ Vue.use(Lazyload, {
 })
 
 Vue.use(Tabbar)
+Vue.use(Checkbox)
+Vue.use(CheckboxGroup)
+Vue.use(Loading)
 Vue.use(Skeleton)
 Vue.use(Step)
 Vue.use(Steps)

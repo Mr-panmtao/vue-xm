@@ -22,11 +22,12 @@ Vue.use(Toast)
 Vue.use(SwipeCell)
 
 // 配置请求的根路径
-axios.defaults.baseURL = 'http://49.232.193.192:3007/api/'
+// axios.defaults.baseURL = 'http://127.0.0.1:3007/api/'
+axios.defaults.baseURL = 'http://www.panmingtao.top:3007/api/'
 // axios请求拦截
 axios.interceptors.request.use(config => {
   // 每次发起请求都展示进度条
-  NProgress.start()
+  // NProgress.start()
   Toast.loading({ message: '加载中...', forbidClick: true })
   return config
 })
